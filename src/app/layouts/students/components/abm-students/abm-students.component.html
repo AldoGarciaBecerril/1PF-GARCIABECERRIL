@@ -1,0 +1,24 @@
+<div class="example-container">
+    <form [formGroup]="studentFormGroup">
+    <mat-form-field>
+      <mat-label>Enter Your FirsName</mat-label>
+      <input matInput placeholder="name" formControlName="firstName" required>
+      
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Enter Your LastName</mat-label>
+        <input matInput placeholder="lastName" formControlName="lastName" required>
+        
+      </mat-form-field>
+      
+      <mat-form-field>
+        <mat-label>Enter Your Age</mat-label>
+        <input matInput placeholder="age" formControlName="age" required>
+        
+      </mat-form-field>
+      <button mat-button color="accent" (click)="addStudent()">Submit</button>
+      
+</form>
+  </div>
+  
