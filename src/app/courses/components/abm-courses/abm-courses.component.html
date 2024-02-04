@@ -1,0 +1,39 @@
+<form [formGroup]="courseFormGroup">
+  <mat-form-field>
+    <mat-label>Enter Title</mat-label>
+    <input matInput placeholder="title" formControlName="title" required />
+  </mat-form-field>
+  <button mat-button color="accent" (click)="manageCourse()">Submit</button>
+</form>
+<mat-form-field>
+  <mat-label>Select Teacher</mat-label>
+  <mat-select [(ngModel)]="selectedTeacher" name="teacher">
+    @for (teacher of teachers; track teacher) {
+    <mat-option [value]="teacher.id">{{ teacher | fullNamePipe }}</mat-option>
+    }
+  </mat-select>
+</mat-form-field>
+@if (!!course) {
+<h5>Students:</h5>
+<mat-list role="list">
+  @for (student of students; track course.id) {
+  <mat-list-item role="listitem"
+    >{{ student | fullNamePipe }}
+    <button
+      *ngIf="course.students.includes(student.id)"
+      mat-icon-button
+      (click)="removeStudent(student.id)"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
+    <button
+      *ngIf="!course.students.includes(student.id)"
+      mat-icon-button
+      (click)="addStudent(student.id)"
+    >
+      <mat-icon>add</mat-icon>
+    </button>
+  </mat-list-item>
+  }
+</mat-list>
+}

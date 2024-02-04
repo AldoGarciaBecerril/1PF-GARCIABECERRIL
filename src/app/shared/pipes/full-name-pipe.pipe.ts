@@ -1,17 +1,15 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Student } from '../../layouts/students/interface/student.interface';
+import { IStudent } from '../../students/interface/student.interface';
 
 @Pipe({
-  name: 'fullNamePipe'
+  name: 'fullNamePipe',
 })
 export class FullNamePipePipe implements PipeTransform {
-
-  transform(value: Student, ...args: unknown[]): unknown {
-    if(value){
-      return value.firstName +' '+ value.lastName;
-      }
-      return value
+  transform(value: IStudent | undefined, ...args: unknown[]): string {
+    if (value) {
+      return value.firstName + ' ' + value.lastName;
+    } else {
+      return '';
     }
   }
-
-
+}

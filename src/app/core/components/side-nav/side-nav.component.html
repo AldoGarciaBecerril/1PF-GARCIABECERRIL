@@ -1,0 +1,7 @@
+<mat-list role="list">
+  <mat-list-item *ngFor="let myroute of myRoutes" role="listitem">
+    <a matLine [routerLink]="myroute.path" href="{{ myroute.path }}">{{
+      myroute.title
+    }}</a>
+  </mat-list-item>
+</mat-list>

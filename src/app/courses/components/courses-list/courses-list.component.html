@@ -1,0 +1,106 @@
+<div>
+  <app-abm-courses></app-abm-courses>
+  <div>
+    <table mat-table [dataSource]="courses" class="mat-elevation-z8">
+      <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+      <!-- Id Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef appCabeceras>Course ID</th>
+        <td mat-cell *matCellDef="let course">{{ course.id }}</td>
+      </ng-container>
+
+      <!-- Teacher Column -->
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef appCabeceras>Title</th>
+        <td mat-cell *matCellDef="let course">{{ course.title }}</td>
+      </ng-container>
+
+      <!-- Teacher Column -->
+      <ng-container matColumnDef="teacher">
+        <th mat-header-cell *matHeaderCellDef appCabeceras>Teacher</th>
+        <td mat-cell *matCellDef="let course">{{ course.teacher | studentIdParser | fullNamePipe }}</td>
+      </ng-container>
+
+      <!-- Students Column -->
+      <ng-container matColumnDef="students">
+        <th mat-header-cell *matHeaderCellDef appCabeceras>Students</th>
+        <td mat-cell *matCellDef="let course">
+          <mat-list role="list">
+            @for (student of course.students; track student.id) {
+            <mat-list-item role="listitem">{{
+              student | studentIdParser | fullNamePipe
+            }}</mat-list-item>
+            }
+          </mat-list>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef appCabeceras>Actions</th>
+        <td mat-cell *matCellDef="let course">
+          <button mat-icon-button (click)="editCourse(course)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button (click)="deleteCourse(course)">
+            <mat-icon>delete</mat-icon>
+          </button>
+          <button mat-icon-button (click)="openDetailsCourse(course)">
+            <mat-icon>lists</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+</div>
+<!-- Modal -->
+@if (showModal) {
+<div class="backdrop" (click)="showModal = false"></div>
+}
+<div class="modal fade" [ngClass]="{ show: showModal }">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title fs-5" id="staticBackdropLabel">
+          {{ course !== undefined ? course.title : "No Course" }}
+        </h4>
+        <button mat-icon-button (click)="showModal = false">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="modal-body">
+        @if (modalType === 'edit' && course !== undefined) {
+        <app-abm-courses
+          [course]="course"
+          (submitted)="showModal = false"
+        ></app-abm-courses>
+        } @if (modalType === 'details' && course !== undefined) {
+        <p>Teacher: {{ course.teacher | studentIdParser | fullNamePipe }}</p>
+        <ng-container
+          *ngIf="
+            !!course.students && course.students.length > 0;
+            else elseNoCoursesTemplate
+          "
+        >
+          <h5>Students:</h5>
+          <mat-list role="list">
+            @for (student of course.students; track course.id) {
+            <mat-list-item role="listitem">{{ student | studentIdParser | fullNamePipe }}</mat-list-item>
+            }
+          </mat-list>
+        </ng-container>
+        <ng-template #elseNoCoursesTemplate>
+          <p>This course is not subscribed to any course</p>
+        </ng-template>
+        } @if(course === undefined) {
+        <p>There is no course to show</p>
+        }
+      </div>
+    </div>
+  </div>
+</div>

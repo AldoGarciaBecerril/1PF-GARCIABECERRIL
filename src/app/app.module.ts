@@ -1,36 +1,34 @@
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { DashboardModule } from './layouts/dashboard/dashboard.module';
-import { StudentsModule } from './layouts/students/students.module';
 import { registerLocaleData } from '@angular/common';
-
 import es from '@angular/common/locales/es';
 import esMX from '@angular/common/locales/es-MX';
+
+/* Modules */
+import { SharedModule } from './shared/shared.module';
+/* Components */
+import { AppComponent } from './app.component';
+import { SideNavComponent } from './core/components/side-nav/side-nav.component';
 
 registerLocaleData(es);
 registerLocaleData(esMX);
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent, SideNavComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    DashboardModule,
-    StudentsModule
+    SharedModule,
   ],
   providers: [
     {
       provide: LOCALE_ID,
       useValue: 'es-MX',
-    }
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
