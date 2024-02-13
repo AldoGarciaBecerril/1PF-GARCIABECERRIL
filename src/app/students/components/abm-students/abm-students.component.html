@@ -18,6 +18,27 @@
     <mat-label>Enter Your Age</mat-label>
     <input matInput placeholder="age" formControlName="age" required />
   </mat-form-field>
+  <mat-form-field>
+    <mat-label>Enter Your Email</mat-label>
+    <input matInput placeholder="email" formControlName="email" required />
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Enter Your Password</mat-label>
+    <input
+      matInput
+      placeholder="password"
+      formControlName="password"
+      required
+      type="password"
+    />
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Select Role</mat-label>
+    <mat-select formControlName="role">
+      <mat-option [value]="'admin'"> Administrator </mat-option>
+      <mat-option [value]="'user'"> User </mat-option>
+    </mat-select>
+  </mat-form-field>
   <button mat-button color="accent" (click)="manageStudent()">Submit</button>
 </form>
 @if (!!student) {

@@ -24,6 +24,9 @@ export class ABMStudentsComponent implements OnInit {
       firstName: this.formBuilder.control(''),
       lastName: this.formBuilder.control(''),
       age: this.formBuilder.control(0),
+      email: this.formBuilder.control(''),
+      password: this.formBuilder.control(''),
+      role: this.formBuilder.control('user'),
     });
   }
   ngOnInit(): void {

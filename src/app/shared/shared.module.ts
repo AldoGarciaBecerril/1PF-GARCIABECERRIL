@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 /* Material */
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
@@ -30,6 +31,7 @@ import { CabecerasDirective } from './directives/cabeceras.directive';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    HttpClientModule,
     MatFormFieldModule,
     MatSidenavModule,
     MatButtonModule,
@@ -45,6 +47,7 @@ import { CabecerasDirective } from './directives/cabeceras.directive';
     /* Module */
     FormsModule,
     ReactiveFormsModule,
+    HttpClientModule,
     MatFormFieldModule,
     MatSidenavModule,
     MatButtonModule,
@@ -54,12 +57,12 @@ import { CabecerasDirective } from './directives/cabeceras.directive';
     MatDividerModule,
     MatTableModule,
     MatListModule,
+    MatSelectModule,
     /* Pipes */
     FullNamePipePipe,
     StudentIdParserPipe,
     /* Directives */
     CabecerasDirective,
-    MatSelectModule,
   ],
 })
 export class SharedModule {}
