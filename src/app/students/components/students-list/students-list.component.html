@@ -60,7 +60,7 @@
 @if (showModal) {
 <div class="backdrop" (click)="showModal = false"></div>
 }
-<div class="modal fade" [ngClass]="{ show: showModal }">
+<div class="modal fade" [ngClass]="{ 'd-block show': !!showModal }">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
