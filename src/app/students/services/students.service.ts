@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 /* RxJs */
-import { Subject } from 'rxjs';
+import { Observable, Subject, map } from 'rxjs';
 /* Interfaces */
 import { IStudent } from '../interface/student.interface';
 
@@ -9,7 +10,7 @@ import { IStudent } from '../interface/student.interface';
 })
 export class StudentsService {
   public students: IStudent[] = [
-    {
+    /* {
       id: 1,
       firstName: 'John',
       lastName: 'Doe',
@@ -71,41 +72,137 @@ export class StudentsService {
       email: 'jeff_doe@myapp.com',
       password: 'pass',
       role: 'user',
-    },
+    }, */
   ];
   public students$: Subject<IStudent[]> = new Subject<IStudent[]>();
-  constructor() {
-    this.students$.next(this.students);
+  constructor(private _http: HttpClient) {
+    this.getStudents();
   }
   /* Create */
-  public createStudent(student: IStudent): void {
+  public createStudent(student: IStudent): Observable<IStudent | undefined> {
     student.id = student.id || this.students[this.students.length - 1].id + 1;
-    this.students.push(student);
-    this.students$.next(this.students);
+    return this._http
+      .post<IStudent | undefined>(
+        'https://65cbf480efec34d9ed884d34.mockapi.io/student',
+        student
+      )
+      .pipe(
+        map((student: IStudent | undefined) => {
+          if (student) {
+            student.id =
+              typeof student.id === 'number'
+                ? student.id
+                : parseInt(student.id);
+            this.students.push(student);
+            this.students$.next(this.students);
+            return student;
+          } else {
+            return undefined;
+          }
+        })
+      );
   }
   /* Read */
-  public getStudents(): IStudent[] {
+  public getStudents(): Observable<IStudent[]> {
     this.students$.next(this.students);
-    return this.students;
+    return this._http
+      .get<IStudent[]>('https://65cbf480efec34d9ed884d34.mockapi.io/student')
+      .pipe(
+        map((students: IStudent[]) => {
+          students = students.map((student: IStudent) => {
+            student.id =
+              typeof student.id === 'number'
+                ? student.id
+                : parseInt(student.id);
+            return student;
+          });
+          this.students = students;
+          this.students$.next(this.students);
+          return students;
+        })
+      );
   }
-  public getStudent(id: number): IStudent | undefined {
-    return this.students.find((s) => s.id === id);
+  public getStudent(id: number): Observable<IStudent | undefined> {
+    return this._http
+      .get<IStudent>(
+        `https://65cbf480efec34d9ed884d34.mockapi.io/student/${id}`
+      )
+      .pipe(
+        map((student: IStudent | undefined) => {
+          if (student) {
+            student.id =
+              typeof student.id === 'number'
+                ? student.id
+                : parseInt(student.id);
+            return student;
+          } else {
+            return undefined;
+          }
+        })
+      );
   }
   public getStudentsSubject(): Subject<IStudent[]> {
+    this.getStudents().subscribe({
+      next: (students: IStudent[]) => {
+        this.students = students;
+        this.students$.next(this.students);
+      },
+    });
     return this.students$;
   }
   /* Update */
-  public updateStudent(student: IStudent): void {
-    this.students.forEach((s, index) => {
-      if (s.id === student.id) {
-        this.students[index] = student;
-      }
-    });
-    this.students$.next(this.students);
+  public updateStudent(student: IStudent): Observable<IStudent | undefined> {
+    return this._http
+      .put<IStudent | undefined>(
+        `https://65cbf480efec34d9ed884d34.mockapi.io/student/${student.id}`,
+        student
+      )
+      .pipe(
+        map((student: IStudent | undefined) => {
+          if (student) {
+            student.id =
+              typeof student.id === 'number'
+                ? student.id
+                : parseInt(student.id);
+            this.students.forEach((s, index) => {
+              if (s.id === student.id) {
+                this.students[index] = student;
+              }
+            });
+            this.students$.next(this.students);
+            return student;
+          } else {
+            return undefined;
+          }
+        })
+      );
   }
   /* Delete */
-  public deleteStudent(id: number): void {
+  public deleteStudent(id: number): Observable<IStudent | undefined> {
     this.students = this.students.filter((s) => s.id !== id);
+    this.students$.next(this.students);
+    return this._http
+      .delete<IStudent>(
+        `https://65cbf480efec34d9ed884d34.mockapi.io/student/${id}`
+      )
+      .pipe(
+        map((student: IStudent | undefined) => {
+          if (student) {
+            student.id =
+              typeof student.id === 'number'
+                ? student.id
+                : parseInt(student.id);
+            this.students = this.students.filter((s) => s.id !== id);
+            this.students$.next(this.students);
+            return student;
+          } else {
+            return undefined;
+          }
+        })
+      );
+  }
+  /* Recharge */
+  rechargeStudents() {
     this.students$.next(this.students);
   }
 }

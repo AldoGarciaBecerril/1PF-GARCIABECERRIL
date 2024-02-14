@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 /* RxJs */
-import { Subject } from 'rxjs';
+import { Subject, firstValueFrom } from 'rxjs';
 /* Interfaces */
 import { IStudent } from '../../interface/student.interface';
 /* Services */
@@ -43,25 +43,27 @@ export class StudentsListComponent implements OnInit {
     });
     this._studentsService.getStudents();
   }
-  getStudentCourses(student: IStudent): ICourse[] {
-    return this._coursesService.getCourses().filter((c: ICourse) => {
-      return c.students.includes(student.id);
-    });
+  async getStudentCourses(student: IStudent): Promise<ICourse[]> {
+    return (await firstValueFrom(this._coursesService.getCourses())).filter(
+      (c: ICourse) => {
+        return c.students.includes(student.id);
+      }
+    );
   }
-  editStudent(student: IStudent) {
+  async editStudent(student: IStudent) {
     this.showModal = true;
     this.student = student;
     this.modalType = 'edit';
-    this.student.courses = this.getStudentCourses(student);
+    this.student.courses = await this.getStudentCourses(student);
     console.log('Edit student', student);
   }
   deleteStudent(student: IStudent) {
     this._studentsService.deleteStudent(student.id);
   }
-  openDetailsStudent(student: IStudent) {
+  async openDetailsStudent(student: IStudent) {
     this.showModal = true;
     this.student = student;
-    this.student.courses = this.getStudentCourses(student);
+    this.student.courses = await this.getStudentCourses(student);
     this.modalType = 'details';
     console.log('Open details student', student);
   }

@@ -5,11 +5,11 @@ import { IStudent } from '../../students/interface/student.interface';
   name: 'fullNamePipe',
 })
 export class FullNamePipePipe implements PipeTransform {
-  transform(value: IStudent | undefined, ...args: unknown[]): string {
+  transform(value: IStudent | undefined | null, ...args: unknown[]): string {
     if (value) {
       return value.firstName + ' ' + value.lastName;
     } else {
-      return '';
+      return 'User not found';
     }
   }
 }

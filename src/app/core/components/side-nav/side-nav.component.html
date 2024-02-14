@@ -1,7 +1,20 @@
 <mat-list role="list">
-  <mat-list-item *ngFor="let myroute of myRoutes" role="listitem">
+  <mat-list-item
+    *ngFor="let myroute of myRoutes"
+    role="listitem"
+    class="text-center"
+  >
     <a matLine [routerLink]="myroute.path" href="{{ myroute.path }}">{{
       myroute.title
     }}</a>
   </mat-list-item>
 </mat-list>
+<button
+  *ngIf="!!identity"
+  mat-raised-button
+  color="warn"
+  (click)="logout()"
+  class="mx-auto d-block my-3"
+>
+  Logout
+</button>

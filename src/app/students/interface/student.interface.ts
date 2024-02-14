@@ -7,6 +7,6 @@ export interface IStudent {
   age: number;
   email: string;
   password: string;
-  role: 'user' | 'admin';
+  role: 'user' | 'admin' | 'teacher';
   courses?: ICourse[];
 }

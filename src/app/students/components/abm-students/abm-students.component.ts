@@ -36,7 +36,15 @@ export class ABMStudentsComponent implements OnInit {
     this.getCourses();
   }
   getCourses() {
-    this.courses = this._coursesService.getCourses();
+    this._coursesService.getCoursesSubject().subscribe({
+      next: (courses: ICourse[]) => {
+        this.courses = courses;
+      },
+      error: (err) => {
+        console.error(err);
+        this.courses = [];
+      },
+    });
   }
   manageStudent() {
     let student: IStudent = this.studentFormGroup.value;

@@ -33,10 +33,26 @@ export class AbmCoursesComponent implements OnInit {
     this.getStudents();
   }
   getTeachers() {
-    this.teachers = this._studentsService.getStudents();
+    this._studentsService.getStudentsSubject().subscribe({
+      next: (students: IStudent[]) => {
+        this.teachers = students.filter((s) => s.role === 'teacher');
+      },
+      error: (error) => {
+        console.error(error);
+        this.teachers = [];
+      },
+    });
   }
   getStudents() {
-    this.students = this._studentsService.getStudents();
+    this._studentsService.getStudentsSubject().subscribe({
+      next: (students: IStudent[]) => {
+        this.students = students;
+      },
+      error: (error) => {
+        console.error(error);
+        this.students = [];
+      },
+    });
   }
   manageCourse() {
     let course: ICourse = this.courseFormGroup.value;

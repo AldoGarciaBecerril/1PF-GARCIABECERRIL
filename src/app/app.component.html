@@ -1,15 +1,15 @@
 <!-- SideNav -->
-<mat-drawer-container class="example-container" autosize>
-  <mat-drawer #drawer class="example-sidenav" mode="side">
+<mat-drawer-container id="mat-drawer-container" autosize>
+  <mat-drawer #drawer id="mat-drawer" mode="side">
     <app-side-nav></app-side-nav>
   </mat-drawer>
 
-<!-- toolbar -->
+  <!-- toolbar -->
   <div class="example-sidenav-content">
     <p>
       <mat-toolbar color="primary">
         <button
-        (click)="drawer.toggle()"
+          (click)="drawer.toggle()"
           mat-icon-button
           class="example-icon"
           aria-label="Example icon-button with menu icon"
@@ -17,6 +17,7 @@
           <mat-icon>menu</mat-icon>
         </button>
         <span>My App</span>
+        <span *ngIf="!!identity" class="mx-3">{{ identity | fullNamePipe }}</span>
         <span class="example-spacer"></span>
         <button
           mat-icon-button
