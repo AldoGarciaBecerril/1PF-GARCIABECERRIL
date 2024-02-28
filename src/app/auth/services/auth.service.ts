@@ -22,20 +22,4 @@ export class AuthService {
         )
       );
   }
-  saveIdentity(student: IStudent): void {
-    this.identity = student;
-    this.identity$.next(this.identity);
-    localStorage.setItem('ALDOAPP_student', JSON.stringify(student));
-  }
-  getIdentity(): IStudent | undefined {
-    const student = localStorage.getItem('ALDOAPP_student');
-    this.identity = student ? JSON.parse(student) : undefined;
-    this.identity$.next(this.identity);
-    return this.identity;
-  }
-  removeIdentity(): void {
-    this.identity = undefined;
-    this.identity$.next(this.identity);
-    localStorage.removeItem('ALDOAPP_student');
-  }
 }

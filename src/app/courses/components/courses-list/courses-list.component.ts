@@ -7,8 +7,11 @@ import { IStudent } from '../../../students/interface/student.interface';
 /* Services */
 import { CoursesService } from '../../services/courses.service';
 import { StudentsService } from '../../../students/services/students.service';
-import { AuthService } from '../../../auth/services/auth.service';
-
+/* Store */
+import { Store } from '@ngrx/store';
+import { AppState } from '../../../core/state/app.state';
+import { selectAuthIdentity } from '../../../auth/state/auth.selectors';
+import { AuthActions } from '../../../auth/state/auth.actions';
 @Component({
   selector: 'app-courses-list',
   templateUrl: './courses-list.component.html',
@@ -16,7 +19,6 @@ import { AuthService } from '../../../auth/services/auth.service';
 })
 export class CoursesListComponent implements OnInit {
   public identity: IStudent | undefined;
-  public identity$: Subject<IStudent | undefined>;
   public displayedColumns: string[] = [
     'id',
     'title',
@@ -33,18 +35,17 @@ export class CoursesListComponent implements OnInit {
   constructor(
     private _coursesService: CoursesService,
     private _studentsService: StudentsService,
-    private _authService: AuthService
+    private _store: Store<AppState>
   ) {
     this.courses$ = this._coursesService.getCoursesSubject();
     this._studentsService.getStudents();
-    this.identity$ = this._authService.identity$;
-    this.identity$.subscribe({
+    this._store.select(selectAuthIdentity).subscribe({
       next: (identity: IStudent | undefined) => {
         this.identity = identity;
       },
       error: (err) => console.error(err),
     });
-    this._authService.getIdentity();
+    this._store.dispatch(AuthActions.loadAuths());
     setTimeout(() => {
       this.loading = false;
     }, 1000);

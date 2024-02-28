@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
-/* RxJs */
-import { Subject } from 'rxjs';
 /* Interfaces */
 import { IStudent } from '../../../students/interface/student.interface';
-/* Services */
-import { AuthService } from '../../../auth/services/auth.service';
+/* Store */
+import { Store } from '@ngrx/store';
+import { AppState } from '../../../core/state/app.state';
+import { selectAuthIdentity } from '../../../auth/state/auth.selectors';
+import { AuthActions } from '../../../auth/state/auth.actions';
+import { Router } from '@angular/router';
 export interface IMyRoutes {
   path: string;
   title: string;
@@ -16,11 +18,9 @@ export interface IMyRoutes {
 })
 export class SideNavComponent {
   public identity: IStudent | undefined;
-  public identity$: Subject<IStudent | undefined>;
   public myRoutes: IMyRoutes[] = [];
-  constructor(private _authService: AuthService) {
-    this.identity$ = this._authService.identity$;
-    this.identity$.subscribe({
+  constructor(private _router: Router, private _store: Store<AppState>) {
+    this._store.select(selectAuthIdentity).subscribe({
       next: (identity: IStudent | undefined) => {
         this.identity = identity;
         if (!this.identity) {
@@ -59,9 +59,10 @@ export class SideNavComponent {
       },
       error: (err) => console.error(err),
     });
-    this._authService.getIdentity();
+    this._store.dispatch(AuthActions.loadAuths());
   }
   logout() {
-    this._authService.removeIdentity();
+    this._store.dispatch(AuthActions.logout());
+    this._router.navigate(['/auth/login']);
   }
 }

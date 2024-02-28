@@ -1,17 +1,26 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-/* Services */
-import { AuthService } from '../services/auth.service';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../core/state/app.state';
+import { selectAuthLoaded } from '../state/auth.selectors';
+import { Observable, map } from 'rxjs';
 
-export const isLoggedGuard: CanActivateFn = (route, state) => {
-  const _authService = inject(AuthService);
+export const isLoggedGuard: CanActivateFn = (
+  route,
+  state
+): Observable<boolean> => {
   const _router = inject(Router);
-  const identity = _authService.getIdentity();
-  if (!identity) {
-    alert('You are not logged');
-    _router.navigate(['/auth/login']);
-    return false;
-  } else {
-    return true;
-  }
+  const _store: Store<AppState> = inject(Store);
+  return _store.select(selectAuthLoaded).pipe(
+    map((loaded: boolean) => {
+      console.log('isLoggedGuard', loaded);
+      if (!loaded) {
+        alert('Loading...');
+        _router.navigate(['/auth/login']);
+        return false;
+      } else {
+        return true;
+      }
+    })
+  );
 };

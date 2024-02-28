@@ -3,6 +3,10 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 /* Services */
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+/* Store */
+import { Store } from '@ngrx/store';
+import { AppState } from '../../../core/state/app.state';
+import { AuthActions } from '../../state/auth.actions';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -13,7 +17,8 @@ export class LoginComponent {
   constructor(
     private formBuilder: FormBuilder,
     private _authService: AuthService,
-    private _router: Router
+    private _router: Router,
+    private _store: Store<AppState>
   ) {
     this.loginForm = this.formBuilder.group({
       email: this.formBuilder.control('', [
@@ -32,7 +37,12 @@ export class LoginComponent {
           next: (student) => {
             if (student) {
               alert('Logged in ' + student.firstName);
-              this._authService.saveIdentity(student);
+              this._store.dispatch(
+                AuthActions.loadAuthsSuccess({
+                  loaded: true,
+                  identity: student,
+                })
+              );
               this._router.navigate(['/']);
             } else {
               alert('Invalid credentials');

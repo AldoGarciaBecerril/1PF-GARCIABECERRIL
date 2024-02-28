@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-/* RxJs */
-import { Subject } from 'rxjs';
 /* Interfaces */
 import { IStudent } from './students/interface/student.interface';
-/* Services */
-import { AuthService } from './auth/services/auth.service';
-
+/* Store */
+import { Store } from '@ngrx/store';
+import { AppState } from './core/state/app.state';
+import { selectAuthIdentity } from './auth/state/auth.selectors';
+import { AuthActions } from './auth/state/auth.actions';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -13,15 +13,13 @@ import { AuthService } from './auth/services/auth.service';
 })
 export class AppComponent {
   public identity: IStudent | undefined;
-  public identity$: Subject<IStudent | undefined>;
-  constructor(private _authService: AuthService) {
-    this.identity$ = this._authService.identity$;
-    this.identity$.subscribe({
+  constructor(private _store: Store<AppState>) {
+    this._store.select(selectAuthIdentity).subscribe({
       next: (identity: IStudent | undefined) => {
         this.identity = identity;
       },
       error: (err) => console.error(err),
     });
-    this._authService.getIdentity();
+    this._store.dispatch(AuthActions.loadAuths());
   }
 }
