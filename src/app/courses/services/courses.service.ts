@@ -45,6 +45,7 @@ export class CoursesService {
       .pipe(
         map((course: ICourse | undefined) => {
           if (course) {
+            console.log(course);
             course.id =
               typeof course.id === 'number' ? course.id : parseInt(course.id);
             this.courses.push(course);

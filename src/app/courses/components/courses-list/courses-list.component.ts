@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 /* RxJs */
-import { Subject } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 /* Interfaces */
 import { ICourse } from '../../interfaces/course.interface';
 import { IStudent } from '../../../students/interface/student.interface';
@@ -17,7 +17,7 @@ import { AuthActions } from '../../../auth/state/auth.actions';
   templateUrl: './courses-list.component.html',
   styleUrl: './courses-list.component.scss',
 })
-export class CoursesListComponent implements OnInit {
+export class CoursesListComponent implements OnInit, OnDestroy {
   public identity: IStudent | undefined;
   public displayedColumns: string[] = [
     'id',
@@ -32,6 +32,9 @@ export class CoursesListComponent implements OnInit {
   public course: ICourse | undefined;
   public modalType: 'edit' | 'details' | 'none' = 'none';
   public loading: boolean = true;
+
+  /* Utility */
+  private _unsubscribeAll: Subject<any> = new Subject<any>();
   constructor(
     private _coursesService: CoursesService,
     private _studentsService: StudentsService,
@@ -39,25 +42,34 @@ export class CoursesListComponent implements OnInit {
   ) {
     this.courses$ = this._coursesService.getCoursesSubject();
     this._studentsService.getStudents();
-    this._store.select(selectAuthIdentity).subscribe({
-      next: (identity: IStudent | undefined) => {
-        this.identity = identity;
-      },
-      error: (err) => console.error(err),
-    });
+    this._store
+      .select(selectAuthIdentity)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe({
+        next: (identity: IStudent | undefined) => {
+          this.identity = identity;
+        },
+        error: (err) => console.error(err),
+      });
     this._store.dispatch(AuthActions.loadAuths());
     setTimeout(() => {
       this.loading = false;
     }, 1000);
   }
   ngOnInit(): void {
-    this.courses$.subscribe({
+    this.courses$.pipe(takeUntil(this._unsubscribeAll)).subscribe({
       next: (courses: ICourse[]) => {
         console.log(courses);
         this.courses = courses;
       },
       error: (err) => console.error(err),
     });
+    this._coursesService.getCourses();
+  }
+  ngOnDestroy(): void {
+    this._unsubscribeAll.complete();
+  }
+  getCourses() {
     this._coursesService.getCourses();
   }
   editCourse(course: ICourse) {
@@ -67,7 +79,19 @@ export class CoursesListComponent implements OnInit {
     console.log('Edit course', course);
   }
   deleteCourse(course: ICourse) {
-    this._coursesService.deleteCourse(course.id);
+    this._coursesService
+      .deleteCourse(course.id)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe({
+        next: (course: ICourse | undefined) => {
+          if (course) {
+            alert('Course deleted');
+          } else {
+            alert('Error deleting course');
+          }
+        },
+        error: (err) => console.error(err),
+      });
   }
   openDetailsCourse(course: ICourse) {
     this.showModal = true;

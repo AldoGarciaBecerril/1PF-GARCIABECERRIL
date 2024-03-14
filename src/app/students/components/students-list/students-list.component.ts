@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 /* RxJs */
-import { Subject, firstValueFrom } from 'rxjs';
+import { Subject, firstValueFrom, takeUntil } from 'rxjs';
 /* Interfaces */
 import { IStudent } from '../../interface/student.interface';
 /* Services */
@@ -13,7 +13,7 @@ import { ICourse } from '../../../courses/interfaces/course.interface';
   templateUrl: './students-list.component.html',
   styleUrl: './students-list.component.scss',
 })
-export class StudentsListComponent implements OnInit {
+export class StudentsListComponent implements OnInit, OnDestroy {
   public displayedColumns: string[] = [
     'id',
     'firstName',
@@ -27,6 +27,8 @@ export class StudentsListComponent implements OnInit {
   public showModal: boolean = false;
   public student: IStudent | undefined;
   public modalType: 'edit' | 'details' | 'none' = 'none';
+  /* Utility */
+  private _unsubscribeAll: Subject<any> = new Subject<any>();
   constructor(
     private _studentsService: StudentsService,
     private _coursesService: CoursesService
@@ -34,7 +36,7 @@ export class StudentsListComponent implements OnInit {
     this.students$ = this._studentsService.getStudentsSubject();
   }
   ngOnInit(): void {
-    this.students$.subscribe({
+    this.students$.pipe(takeUntil(this._unsubscribeAll)).subscribe({
       next: (students: IStudent[]) => {
         console.log(students);
         this.students = [...students];
@@ -42,6 +44,9 @@ export class StudentsListComponent implements OnInit {
       error: (err) => console.error(err),
     });
     this._studentsService.getStudents();
+  }
+  ngOnDestroy(): void {
+    this._unsubscribeAll.complete();
   }
   async getStudentCourses(student: IStudent): Promise<ICourse[]> {
     return (await firstValueFrom(this._coursesService.getCourses())).filter(
@@ -58,7 +63,21 @@ export class StudentsListComponent implements OnInit {
     console.log('Edit student', student);
   }
   deleteStudent(student: IStudent) {
-    this._studentsService.deleteStudent(student.id);
+    this._studentsService
+      .deleteStudent(student.id)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe({
+        next: (student: IStudent | undefined) => {
+          if (student) {
+            alert('Student deleted');
+          } else {
+            alert('Error deleting student');
+          }
+        },
+        error: (err) => {
+          alert('Error deleting student');
+        },
+      });
   }
   async openDetailsStudent(student: IStudent) {
     this.showModal = true;

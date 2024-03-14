@@ -1,5 +1,5 @@
 <div>
-  <app-abm-courses></app-abm-courses>
+  <app-abm-courses (submitted)="getCourses()"></app-abm-courses>
   <div>
     @if(!loading) {
     <table mat-table [dataSource]="courses" class="mat-elevation-z8">
@@ -67,10 +67,9 @@
   </div>
 </div>
 <!-- Modal -->
-@if (showModal) {
+@if (!!showModal) {
 <div class="backdrop" (click)="showModal = false"></div>
-}
-<div class="modal fade" [ngClass]="{ show: showModal }">
+<div class="modal fade show">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -85,7 +84,7 @@
         @if (modalType === 'edit' && course !== undefined) {
         <app-abm-courses
           [course]="course"
-          (submitted)="showModal = false"
+          (submitted)="showModal = false; getCourses()"
         ></app-abm-courses>
         } @if (modalType === 'details' && course !== undefined) {
         <p>
@@ -116,3 +115,4 @@
     </div>
   </div>
 </div>
+}
